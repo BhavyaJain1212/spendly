@@ -88,7 +88,45 @@ def logout():
 
 @app.route("/profile")
 def profile():
-    return "Profile page — coming in Step 4"
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    # Step 4 is UI-only — all data is hardcoded here. Step 5 will replace this
+    # context with real queries from database/db.py. Category names match the
+    # seed categories so the swap is a drop-in. The dataset cross-foots:
+    # amounts sum to 1,284.50 and the breakdown percents sum to 100.
+    user = {
+        "name": "Demo User",
+        "email": "demo@spendly.com",
+        "initials": "DU",
+        "member_since": "January 2026",
+    }
+    stats = {
+        "total_spent": "1,284.50",
+        "transaction_count": 5,
+        "top_category": "Food",
+    }
+    transactions = [
+        {"date": "18 Jun 2026", "description": "Restaurant dinner", "category": "Food",          "amount": "640.00"},
+        {"date": "15 Jun 2026", "description": "Electricity bill",  "category": "Bills",         "amount": "420.50"},
+        {"date": "12 Jun 2026", "description": "New running shoes", "category": "Shopping",      "amount": "120.00"},
+        {"date": "10 Jun 2026", "description": "Cinema ticket",     "category": "Entertainment", "amount": "64.00"},
+        {"date": "03 Jun 2026", "description": "Bus pass top-up",   "category": "Transport",     "amount": "40.00"},
+    ]
+    breakdown = [
+        {"name": "Food",          "total": "640.00", "percent": 50},
+        {"name": "Bills",         "total": "420.50", "percent": 33},
+        {"name": "Shopping",      "total": "120.00", "percent": 9},
+        {"name": "Entertainment", "total": "64.00",  "percent": 5},
+        {"name": "Transport",     "total": "40.00",  "percent": 3},
+    ]
+    return render_template(
+        "profile.html",
+        user=user,
+        stats=stats,
+        transactions=transactions,
+        breakdown=breakdown,
+    )
 
 
 @app.route("/expenses/add")
